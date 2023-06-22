@@ -1,0 +1,43 @@
+CREATE TABLE "HR"."CARS"
+(
+    "ID" NUMBER(19, 0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1 CACHE 20 NOORDER NOCYCLE NOKEEP NOSCALE NOT NULL ENABLE,
+    "MODEL" VARCHAR2(255 CHAR),
+    "YEAR" NUMBER(10, 0),
+    PRIMARY KEY ("ID") USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 TABLESPACE "USERS" ENABLE
+)
+SEGMENT CREATION DEFERRED PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 NOCOMPRESS LOGGING TABLESPACE "USERS";
+
+--------------------------------------
+INSERT INTO "HR"."CARS" ("MODEL", "YEAR")
+VALUES ('Toyota Camry', 2022);
+
+INSERT INTO "HR"."CARS" ("MODEL", "YEAR")
+VALUES ('Honda Civic', 2021);
+
+INSERT INTO "HR"."CARS" ("MODEL", "YEAR")
+VALUES ('Ford Mustang', 2020);
+-------------------------
+CREATE OR REPLACE PROCEDURE FIND_CARS_AFTER_YEAR(year_in IN NUMBER) AS
+    CURSOR car_cursor IS
+        SELECT * FROM CARS WHERE "YEAR" >= year_in ORDER BY "YEAR";
+    car_row car_cursor%ROWTYPE;
+BEGIN
+    OPEN car_cursor;
+    LOOP
+        FETCH car_cursor INTO car_row;
+        EXIT WHEN car_cursor%NOTFOUND;
+        
+        -- Process the row as needed
+        -- Example: DBMS_OUTPUT.PUT_LINE(car_row.column_name);
+    END LOOP;
+    CLOSE car_cursor;
+END;
+-------------------------
+create or replace PROCEDURE GET_TOTAL_CARS_BY_MODEL(
+    model_in IN VARCHAR2,
+    count_out OUT NUMBER
+) AS
+BEGIN
+    SELECT COUNT(*) INTO count_out FROM "HR"."CARS" WHERE "MODEL" = model_in;
+END;
+
